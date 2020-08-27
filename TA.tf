@@ -1,14 +1,7 @@
-terraform {
-  required_providers {
-    azurerm = {  
-            source  = "hashicorp/azurerm"
-            version = "~> 2.12"
-    }
-    newrelic = {
-  source  = "newrelic/newrelic"
-      version = "~> 2.1.1"
-    }
-  }
+provider "azurerm" {
+
+version = "~>2.0"
+    features {}
 }
 
 resource "azurerm_resource_group" "Terra1" {
@@ -55,3 +48,24 @@ resource "azurerm_network_security_group" "H-Nsg" {
 
 
 }
+
+resource "azurerm_network_interface" "T-inter" {
+    name ="T-inter"
+    location ="koreacentral"
+    resource_group_name = azurerm_resource_group.Terra1.name
+
+    ip_configuration {
+        name ="T-Nic"
+        subnet_id =azurerm_subnet.T-Sub.id
+        private_ip_address_allocation ="Dynamic"
+        public_ip_address_id = azurerm_public_ip.T-Pubip.id
+     }
+}
+    resource "azurerm_network_interface_security_group_association" "T-ex" {
+        network_interface_id = azurerm_network_interface.T-inter.id
+        network_security_group_id = azurerm_network_security_group.H-Nsg.id
+    }
+
+
+   
+
